@@ -18,6 +18,15 @@ Cartographer ROS Integration
 
 |build| |docs| |license|
 
+検証中
+=======
+
+* パラメータを検証中
+https://google-cartographer-ros.readthedocs.io/en/latest/tuning.html
+
+* 3Dが重い
+
+
 Purpose
 =======
 
@@ -57,4 +66,3 @@ at `our Contribution page`_.
      :alt: Apache 2 license.
      :scale: 100%
      :target: https://github.com/cartographer-project/cartographer_ros/blob/master/LICENSE
-
