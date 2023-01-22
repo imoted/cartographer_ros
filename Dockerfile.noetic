@@ -73,9 +73,38 @@ RUN cartographer_ros/scripts/install.sh --pkg cartographer_rviz && \
         --catkin-make-args run_tests && \
     cartographer_ros/scripts/catkin_test_results.sh build_isolated/cartographer_rviz
 
-COPY scripts/ros_entrypoint.sh /
-
 RUN rm -rf /var/lib/apt/lists/*
 # A BTRFS bug may prevent us from cleaning up these directories.
 # https://btrfs.wiki.kernel.org/index.php/Problem_FAQ#I_cannot_delete_an_empty_directory
 RUN rm -rf cartographer_ros catkin_ws || true
+
+RUN apt-get update && apt-get install -y net-tools vim python3-catkin-tools
+
+ARG USER=ros
+ARG PASSWORD=${USER}
+ARG HOME_PATH=/home/${USER}
+ENV LC_CTYPE C.UTF-8
+ENV DEBIAN_FRONTEND=noninteractive
+SHELL ["/bin/bash", "-c"]
+
+RUN useradd -m -s /bin/bash -N ${USER} && \
+    echo "${USER}:${PASSWORD}" |chpasswd && \
+    echo "${USER}    ALL=(ALL)       ALL" >> /etc/sudoers
+
+USER ${USER}
+WORKDIR ${HOME_PATH}
+
+# COPY scripts/ros_entrypoint.sh  ${HOME_PATH}
+
+RUN echo "export MESA_LOADER_DRIVER_OVERRIDE=i965" >> ${HOME_PATH}/.bashrc
+    # echo "source ros_entrypoint.sh" >> ${HOME_PATH}/.bashrc
+
+RUN mkdir -p ${HOME_PATH}/catkin_ws/src
+
+WORKDIR ${HOME_PATH}/catkin_ws
+RUN source /opt/ros/noetic/setup.bash && catkin build
+
+RUN echo "source /opt/ros/noetic/setup.bash" >> ${HOME_PATH}/.bashrc
+    # echo "source ${HOME}/catkin_ws/devel/setup.bash" >> ${HOME_PATH}/.bashrc
+
+WORKDIR ${HOME_PATH}

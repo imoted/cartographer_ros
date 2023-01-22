@@ -1,0 +1,26 @@
+version: '2.3'
+services:
+  cartgrapher:
+    image: cartgrapher
+    build:
+      context: .
+      dockerfile: Dockerfile.noetic
+    container_name: cartgrapher
+    # ports:
+    #   - "5000:5000"
+    tty: true
+    # stdin_open: true
+    shm_size: 8gb
+    # devices:
+    #   - /dev/snd
+    volumes:
+      - /run/user/1000/pulse/native:/tmp/pulseaudio.socket
+      - ${HOME}/Downloads:/home/ros/bag
+      - ${HOME}/Documents/cartographer_ros:/home/ros/catkin_ws/src/cartographer_ros
+      - /etc/localtime:/etc/localtime:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - PULSE_SERVER=unix:/tmp/pulseaudio.socket
+      - PULSE_COOKIE=/tmp/pulseaudio.cookie
